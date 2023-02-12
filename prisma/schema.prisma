@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId    String   @id @default(auto()) @map("_id") @db.ObjectId
+  age       Int      @db.Int
+  height    Float    @db.Double
+  createdAt DateTime @default(now()) @db.Timestamp
+  role      Role
+  Post      Post[]   @relation("USER_UPLOAD_POST")
+
+  @@map("user")
+}
+
+enum Role {
+  ADMIN
+  USER
+  MANAGER
+}
+
+model Post {
+  postId   String    @id @default(auto()) @map("_id") @db.ObjectId
+  title    String    @db.String
+  writer   User      @relation("USER_UPLOAD_POST", fields: [writerId], references: [userId])
+  writerId String    @db.ObjectId
+  comments Comment[] // JSON을 사용할 때 타입을 정해줄 수 있다.
+
+  @@map("post")
+}
+
+type Comment {
+  userId    String   @map("_id") @db.ObjectId
+  content   String?
+  createdAt DateTime @default(now()) @db.Timestamp
+}
