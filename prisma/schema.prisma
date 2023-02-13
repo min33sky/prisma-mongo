@@ -42,3 +42,8 @@ type Comment {
   content   String?
   createdAt DateTime @default(now()) @db.Timestamp
 }
+
+model Search {
+  keyword  String   @id @map("_id")
+  keywords String[] // 연관 검색어 모음
+}
